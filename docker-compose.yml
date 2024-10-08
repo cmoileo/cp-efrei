@@ -1,29 +1,34 @@
+version: '3.8'
+
 services:
-  front:
-    build: .
+  db:
+    build:
+      context: ./mysql
+      dockerfile: dockerfile
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  web:
+    build:
+      context: ./php
+      dockerfile: dockerfile
     ports:
       - "8085:80"
-    volumes:
-      - ./www:/var/www/html
-    environment:
-      - DB_HOST=db
-      - DB_USER=cp_user
-      - DB_PASSWORD=pass
-      - DB_NAME=bdd
-      - DB_PORT=3306
     depends_on:
       - db
-
-  db:
-    image: mysql:8.0
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpwd
-      - MYSQL_DATABASE=bdd
-      - MYSQL_USER=cp_user
-      - MYSQL_PASSWORD=pass
-    volumes:
-      - mysql-cp-data:/var/lib/mysql
-      - ./cp.sql:/docker-entrypoint-initdb.d/cp.sql
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
 
 volumes:
-  mysql-cp-data:
+  db_data:
