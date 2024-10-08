@@ -1,34 +1,30 @@
-version: '3.8'
-
 services:
-  db:
-    build:
-      context: ./mysql
-      dockerfile: dockerfile
-    environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "${DB_PORT}:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-
-  web:
-    build:
-      context: ./php
-      dockerfile: dockerfile
+  front:
+    build: ./php
+    restart : unless-stopped
+    image: cmoileo/web-cp:latest
     ports:
       - "8085:80"
+    volumes:
+     - .php/www:/var/www/html
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=rootpwd
+      - DB_NAME=cp
+      - DB_PORT=3306
+
     depends_on:
       - db
+  db:
+    build: ./mysql
+    image: cmoileo/mysql-cp:latest
+    ports:
+      - "3306:3306"
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_PORT: ${DB_PORT}
+      - MYSQL_ROOT_PASSWORD=rootpwd
+    volumes:
+      - mysql-cp-data:/var/lib/mysql
 
 volumes:
-  db_data:
+  mysql-cp-data:
