@@ -4,7 +4,7 @@
     $db_name = getenv('DB_NAME');
     $db_user = getenv('DB_USER');
     $db_password = getenv('DB_PASSWORD');
-     $db_port = getenv('DB_PORT');
+    $db_port = getenv('DB_PORT');
 
     // Connexion MysQL avec PDO
     try {
@@ -17,7 +17,7 @@
         );
 
         header('Content-Type: application/json');
-        echo json_encode($retour);
+        echo json_encode($e);
         exit;
     }
 
